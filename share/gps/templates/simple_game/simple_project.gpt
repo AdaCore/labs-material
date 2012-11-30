@@ -1,0 +1,13 @@
+# Header
+Name: Simple Game
+Category: Games
+Project: @_project_name_@.gpr
+
+# Variables
+Project_Name: default: The name of the project.
+Main_Name: main: The name of the main file.
+
+# Description
+[Description]
+A minimal game structure, will a ball moving to the direction 
+given by the arrows.

@@ -1,0 +1,19 @@
+with "game_support.gpr";
+
+project @_Project_Name_@ is
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("@_main_name_@.adb");
+
+   package Compiler is
+      for Default_Switches use Game_Support.Compiler'Default_Switches;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches use Game_Support.Binder'Default_Switches;
+   end Binder;      
+
+   package Linker is
+      for Default_Switches use Game_Support.Linker'Default_Switches;
+   end Linker;
+end @_Project_Name_@;
