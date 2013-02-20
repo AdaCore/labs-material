@@ -1,0 +1,12 @@
+# Header
+Name: Empty Game Project
+Category: Games
+Project: @_project_name_@.gpr
+
+# Variables
+Project_Name: default: The name of the project.
+Main_Name: main: The name of the main file.
+
+# Description
+[Description]
+The minimal setyp to create a gamed based on the Game Support library.

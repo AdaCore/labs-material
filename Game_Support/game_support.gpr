@@ -1,0 +1,19 @@
+with "gnat_sdl";
+
+project Game_Support is
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Library_Name use "gamesupport";
+   for Library_Dir use "lib";
+   for Library_Kind use "static";
+   for Source_Dirs use ("src");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnat12", "-g", "-gnatQ", "-gnateE");      end Compiler;
+   
+   package Binder is
+      for Default_Switches ("Ada") use ("-E");   
+   end Binder;
+
+end Game_Support;
