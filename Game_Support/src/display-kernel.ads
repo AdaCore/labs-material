@@ -173,8 +173,7 @@ private package Display.Kernel is
          when others =>
             null;
       end case;
-   end record
-   with Static_Predicate => Shape_Object.Kind = Shape_Object.D.Kind;
+   end record;
 
    Null_Shape : constant Shape_Object := (None, others => <>);
 

@@ -1095,4 +1095,7 @@ package body Display.Kernel is
 begin
    Data_Manager.Initialize;
    Set_Dependents_Fallback_Handler (Exception_Reporting.Report'Access);
+   Set_Specific_Handler 
+     (Ada.Task_Identification.Current_Task, 
+      Exception_Reporting.Report'Access);   
 end Display.Kernel;

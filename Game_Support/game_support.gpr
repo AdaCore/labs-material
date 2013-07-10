@@ -10,7 +10,8 @@ project Game_Support is
    for Source_Dirs use ("src");
 
    package Compiler is
-      for Default_Switches ("Ada") use ("-gnat12", "-g", "-gnatQ", "-gnateE");      end Compiler;
+      for Default_Switches ("Ada") use ("-gnat12", "-g", "-gnatQ", "-gnateE"); 
+   end Compiler;
    
    package Binder is
       for Default_Switches ("Ada") use ("-E");   
