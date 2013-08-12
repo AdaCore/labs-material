@@ -1,6 +1,6 @@
 PREFIX=$(HOME)/lab_install
 
-all: mk_sdl mk_game_support mk_share
+all: install_sdl mk_sdl mk_game_support mk_share
 
 mk_sdl:
 	cd GNAT_SDL && gprbuild -P gnat_sdl.gpr && gprinstall -P gnat_sdl.gpr --prefix=$(PREFIX) -p -f
@@ -11,3 +11,5 @@ mk_game_support:
 mk_share:
 	cp -r share $(PREFIX)
 
+install_sdl:
+	sh install_sdl.sh $(PREFIX)
