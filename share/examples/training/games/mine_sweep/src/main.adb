@@ -163,16 +163,9 @@ procedure Main is
    end Reset;
       
    K : Key_Type;
-   I : Integer;
 begin
    Reset (Seed, Integer (Seconds (Ada.Calendar.Clock)));
    Reset;
-  
-   if Get_Line = "A" then
-      I := 0;
-   end if;
-   
-   Put_Line (Integer'Image (I));
    
    Total_Mines_Shape := New_Text (110.0, 80.0, "Mines : 0 / 0", Red);
            
