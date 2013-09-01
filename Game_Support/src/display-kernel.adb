@@ -1,7 +1,7 @@
------------------------------------------------------------------------
+--  -----------------------------------------------------------------------
 --                              Ada Labs                             --
 --                                                                   --
---                 Copyright (C) 2008-2009, AdaCore                  --
+--                 Copyright (C) 2008-2013, AdaCore                  --
 --                                                                   --
 -- Labs is free  software; you can redistribute it and/or modify  it --
 -- under the terms of the GNU General Public License as published by --
@@ -17,59 +17,70 @@
 -- Place - Suite 330, Boston, MA 02111-1307, USA.                    --
 -----------------------------------------------------------------------
 
-with Interfaces.C.Strings;
-use Interfaces.C.Strings;
-with GNAT.OS_Lib; use GNAT.OS_Lib;
+with Interfaces.C.Strings;  use Interfaces.C.Strings;
+with GNAT.OS_Lib;           use GNAT.OS_Lib;
 
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Numerics; use Ada.Numerics;
+with Ada.Text_IO;                       use Ada.Text_IO;
+with Ada.Numerics;                      use Ada.Numerics;
 with Ada.Numerics.Elementary_Functions; use Ada.Numerics.Elementary_Functions;
-with System; use System;
-with Interfaces.C; use Interfaces.C;
+with System;                            use System;
 
 with Ada.Exceptions; use Ada.Exceptions;
-with Ada.Calendar; use Ada.Calendar;
+with Ada.Calendar;   use Ada.Calendar;
 
-with GL_gl_h; use GL_gl_h;
-with GL_glu_h; use GL_glu_h;
-with SDL_SDL_h; use SDL_SDL_h;
+with GL_glu_h;         use GL_glu_h;
+with SDL_SDL_h;        use SDL_SDL_h;
 with SDL_SDL_stdinc_h; use SDL_SDL_stdinc_h;
-with SDL_SDL_video_h; use SDL_SDL_video_h;
-with SDL_SDL_mouse_h; use SDL_SDL_mouse_h;
+with SDL_SDL_video_h;  use SDL_SDL_video_h;
 with SDL_SDL_events_h; use SDL_SDL_events_h;
-with SDL_SDL_timer_h; use SDL_SDL_timer_h;
+with SDL_SDL_timer_h;  use SDL_SDL_timer_h;
 with SDL_SDL_keysym_h; use SDL_SDL_keysym_h;
-with Ada.Numerics.Generic_Elementary_Functions;
-with SDL_SDL_ttf_h; use SDL_SDL_ttf_h;
+with SDL_SDL_ttf_h;    use SDL_SDL_ttf_h;
+
 with Ada.Unchecked_Deallocation;
 with Ada.Task_Identification;
-with Ada.Task_Termination; use Ada.Task_Termination;
+with Ada.Task_Termination;    use Ada.Task_Termination;
 with GNAT.Traceback.Symbolic; use GNAT.Traceback.Symbolic;
-
-with Display.Basic; use Display.Basic;
 
 package body Display.Kernel is
 
    Shapes : Shape_Array (1 .. Max_Shapes) := (others => Null_Shape);
 
    Initialized : Boolean := False with Atomic, Volatile;
-   Quadric : System.Address;
+   Quadric     : System.Address;
 
    Window_Width, Window_Height : Integer;
+
+   Last_Key : Key_Type with Atomic;
+   --  a shared variable, set concurrently by the Poll_Events routine and read 
+   --  by client code
 
    procedure Draw_Text (Obj : in out Shape_Object)
    with Pre => Obj.Kind = Text;
 
    procedure Update_Text (Obj : in out Shape_Object)
-   with Pre => Obj.Kind = Text;
+     with Pre => Obj.Kind = Text;
+   
+   -----------
+   -- Check --
+   -----------
 
-   procedure Check (Ret : int) is
+   procedure Check (Ret : Int) is
    begin
       if Ret /= 0 then
          raise Display_Error;
       end if;
    end Check;
+   
+   ----------------------
+   -- Read_Current_Key --
+   ----------------------
 
+   procedure Read_Current_Key (Key : out Key_Type) is
+   begin
+      Key := Last_Key;
+   end Read_Current_Key;   
+  
    ---------------
    -- Set_Color --
    ---------------
@@ -162,14 +173,15 @@ package body Display.Kernel is
    --------------
 
    procedure Draw_Box (X, Y, Width, Height : Float) is
-      X1 : Float := -Width / 2.0;
-      Y1 : Float := -Height / 2.0;
-      X2 : Float := -Width / 2.0;
-      Y2 : Float := Height / 2.0;
-      X3 : Float := Width / 2.0;
-      Y3 : Float := Height / 2.0;
-      X4 : Float := Width / 2.0;
-      Y4 : Float := -Height / 2.0;
+      pragma Unreferenced (X, Y);
+      X1 : constant Float := -Width / 2.0;
+      Y1 : constant Float := -Height / 2.0;
+      X2 : constant Float := -Width / 2.0;
+      Y2 : constant Float := Height / 2.0;
+      X3 : constant Float := Width / 2.0;
+      Y3 : constant Float := Height / 2.0;
+      X4 : constant Float := Width / 2.0;
+      Y4 : constant Float := -Height / 2.0;
 
       Dx : constant := 2.0;
       Dy : constant := 2.0;
@@ -216,8 +228,6 @@ package body Display.Kernel is
 
       glEnd;
    end Draw_Box;
-
-   package D_Numerics is new Ada.Numerics.Generic_Elementary_Functions (Double);
 
    ----------------
    -- Draw_Torus --
@@ -292,9 +302,9 @@ package body Display.Kernel is
          when Line =>
 
             declare
-               Dx : Float := Float (Shape.D.X2 - Shape.D.X);
-               Dy : Float := Float (Shape.D.Y2 - Shape.D.Y);
-               Length : Float := sqrt (Dx  * Dx + Dy * Dy);
+               Dx : constant Float := Shape.D.X2 - Shape.D.X;
+               Dy : constant Float := Shape.D.Y2 - Shape.D.Y;
+               Length : constant Float := sqrt (Dx  * Dx + Dy * Dy);
 
                The_Cos : Float;
                Angle   : Float;
@@ -468,21 +478,19 @@ package body Display.Kernel is
 
    task GL_Task;
 
-   Started : Boolean := False;
-
    surface : access SDL_Surface;
    vidInfo : access SDL_VideoInfo;
-   w : Integer := 400;
-   h : Integer := 400;
+   w       : constant Integer := 400;
+   h       : constant Integer := 400;
 
-   bpp : Interfaces.C.int := 16;
-   flags : Interfaces.C.unsigned := SDL_OPENGL + SDL_HWSURFACE + SDL_RESIZABLE;
+   bpp   : constant Interfaces.C.int := 16;
+   flags : constant Interfaces.C.unsigned := SDL_OPENGL + SDL_HWSURFACE + SDL_RESIZABLE;
 
    Stop : Boolean := False;
 
    procedure Set_SDL_Video;
    procedure Set_OpenGL;
-   procedure Pool_Events;
+   procedure Poll_Events;
 
    type Glubyte_Arrays is array (int range <>) of aliased GLubyte;
 
@@ -540,7 +548,7 @@ package body Display.Kernel is
          for J in Import_Pixels'Range loop
             declare
                Line : int := J / int (Obj.W);
-               Col  : int := J - Line * int (Obj.W);
+               Col  : constant int := J - Line * int (Obj.W);
             begin
                Line := int (Obj.H) - Line - 1;
 
@@ -636,7 +644,7 @@ package body Display.Kernel is
 
       while not Stop loop
          Idle;
-         Pool_Events;
+         Poll_Events;
 
          glFlush;
          SDL_GL_SwapBuffers;
@@ -742,39 +750,47 @@ package body Display.Kernel is
    end Set_OpenGL;
 
    -----------------
-   -- Pool_Events --
+   -- Poll_Events --
    -----------------
 
-   procedure Pool_Events is
+   procedure Poll_Events is
       Evt : aliased SDL_Event;
 
-      function "-" (K : Special_Key) return Key_Type is
+      function As_Key (K : Special_Key) return Key_Type is
       begin
          return 256 + Special_Key'Pos (K);
-      end "-";
-
+      end As_Key;
+      
+      Up_Arrow    : constant Key_Type := As_Key (KEY_UP);
+      Down_Arrow  : constant Key_Type := As_Key (KEY_DOWN);
+      Left_Arrow  : constant Key_Type := As_Key (KEY_LEFT);
+      Right_Arrow : constant Key_Type := As_Key (KEY_RIGHT);
+      
    begin
       while SDL_PollEvent (Evt'Unchecked_Access) /= 0 loop
          case unsigned (Evt.c_type) is
             when SDL_SDL_events_h.SDL_Quit =>
                Stop := True;
-            when SDL_KEYDOWN =>
-               case Evt.key.keysym.sym is
+            when SDL_KEYDOWN =>               
+               case Evt.Key.Keysym.Sym is
                   when SDLK_LEFT =>
-                     Data_Manager.Set_Last_Key (-KEY_LEFT);
+                     Last_Key := Left_Arrow;
                   when SDLK_RIGHT =>
-                     Data_Manager.Set_Last_Key (-KEY_RIGHT);
+                     Last_Key := Right_Arrow;
                   when SDLK_UP =>
-                     Data_Manager.Set_Last_Key (-KEY_UP);
+                     Last_Key := Up_Arrow;
                   when SDLK_DOWN =>
-                     Data_Manager.Set_Last_Key (-KEY_DOWN);
+                     Last_Key := Down_Arrow;
                   when others =>
-                     Data_Manager.Set_Last_Key (Key_Type (Evt.key.keysym.sym));
+                     Last_Key := Key_Type (Evt.Key.Keysym.Sym);
                end case;
 
-               if Evt.key.keysym.sym = SDLK_ESCAPE then
+               if Evt.Key.Keysym.Sym = SDLK_ESCAPE then
                   Stop := True;
                end if;
+               
+            when SDL_KEYUP =>
+               Last_Key := 0;
 
             when SDL_VIDEORESIZE =>
                Reshape (Integer (Evt.resize.w), Integer (Evt.resize.h));
@@ -814,7 +830,7 @@ package body Display.Kernel is
                null;
          end case;
       end loop;
-   end Pool_Events;
+   end Poll_Events;
 
    -------------------------
    -- Exception_Reporting --
@@ -837,6 +853,7 @@ package body Display.Kernel is
         (Cause : Cause_Of_Termination;
          T     : Ada.Task_Identification.Task_Id;
          X     : Ada.Exceptions.Exception_Occurrence) is
+         pragma Unreferenced (Cause, T);
       begin
          Put_Line ("=== UNCAUGHT EXCEPTION ===");
          Put_Line (Exception_Information (X));
@@ -999,24 +1016,9 @@ package body Display.Kernel is
          return Data (Id).The_Text.all;
       end Get_Text;
 
-      ------------------
-      -- Set_Last_Key --
-      ------------------
-
-      procedure Set_Last_Key (Key : Key_Type) is
-      begin
-         Last_Key := Key;
-      end Set_Last_Key;
-
-      -------------------
-      -- Read_Last_Key --
-      -------------------
-
-      procedure Read_Last_Key (Key : out Key_Type) is
-      begin
-         Key := Last_Key;
-         Last_Key := 0;
-      end Read_Last_Key;
+      -----------------------------
+      -- Set_Last_Mouse_Position --
+      -----------------------------
 
       procedure Set_Last_Mouse_Position (P : Mouse_Position) is
       begin

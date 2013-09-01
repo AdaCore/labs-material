@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------
 --                              Ada Labs                             --
 --                                                                   --
---                 Copyright (C) 2008-2009, AdaCore                  --
+--                 Copyright (C) 2008-2013, AdaCore                  --
 --                                                                   --
 -- Labs is free  software; you can redistribute it and/or modify  it --
 -- under the terms of the GNU General Public License as published by --
@@ -16,11 +16,6 @@
 -- if not,  write to the  Free Software Foundation, Inc.,  59 Temple --
 -- Place - Suite 330, Boston, MA 02111-1307, USA.                    --
 -----------------------------------------------------------------------
-
-private with Display.Kernel;
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with Ada.Containers;
-with Ada.Containers.Doubly_Linked_Lists;
 
 package Display.Basic is
 
@@ -147,11 +142,11 @@ package Display.Basic is
    function Get_Text (V : Shape_Id) return String;
    --  Return the test for the shape given in parameter
 
-   function Read_Last_Key return Key_Type;
-   --  Reads the last key on the keyboard. Key is "consumed", next call will
-   --  either return 0 if no key has been pressed, or the latest one. Keys are
-   --  not store, if not called often enough, keys pressed on the keyboard may
-   --  be missed.
+   function Current_Key_Press return Key_Type;
+   --  Returns the key currently pressed on the keyboard, if any. Result is 0
+   --  if no key is pressed when the function is called. Key presses are not
+   --  stored, therefore if this function is not called sufficiently frequently
+   --  they may be missed.
 
    function To_Character (Key : Key_Type) return Character;
    --  Convert the key to an ASCII-character if the key actually represent such
@@ -166,8 +161,6 @@ package Display.Basic is
    --  Return true if the graphical context is closed
 
 private
-
-   use Display.Kernel;
 
    type Shape_Id is new Natural range 0 .. Max_Shapes;
 

@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------
 --                              Ada Labs                             --
 --                                                                   --
---                 Copyright (C) 2008-2009, AdaCore                  --
+--                 Copyright (C) 2008-2013, AdaCore                  --
 --                                                                   --
 -- Labs is free  software; you can redistribute it and/or modify  it --
 -- under the terms of the GNU General Public License as published by --
@@ -18,9 +18,8 @@
 -----------------------------------------------------------------------
 
 with GNAT.Strings; use GNAT.Strings;
-with GL_gl_h; use GL_gl_h;
+with GL_Gl_H;      use GL_Gl_H;
 with Interfaces.C; use Interfaces.C;
-with Ada.Finalization; use Ada.Finalization;
 with Ada.Containers;
 with Ada.Containers.Doubly_Linked_Lists;
 
@@ -106,6 +105,10 @@ private package Display.Kernel is
       end case;
    end record;
 
+   procedure Read_Current_Key (Key : out Key_Type);
+   --  Key gets the value of the current key pressed on the keyboard, or 0 if no
+   --  key is currently pressed
+
    package Command_Lists is new Ada.Containers.Doubly_Linked_Lists (Command);
 
    type Id_Stack is array (Integer range <>) of Natural;
@@ -127,10 +130,6 @@ private package Display.Kernel is
 
       function Get_Text (Id : Natural) return String;
 
-      procedure Set_Last_Key (Key : Key_Type);
-
-      procedure Read_Last_Key (Key : out Key_Type);
-
       procedure Set_Last_Mouse_Position (P : Mouse_Position);
 
       procedure Read_Last_Mouse_Position (P : out Mouse_Position);
@@ -138,14 +137,14 @@ private package Display.Kernel is
    private
       procedure Release_Id (Id : Natural);
 
-      List : Command_Lists.List;
+      List          : Command_Lists.List;
       Available_Ids : Id_Stack (1 .. Max_Shapes);
       Data          : Shape_Data_Array (1 .. Max_Shapes);
       Stack_Pointer : Integer := 1;
 
-      Last_Key : Key_Type;
       Last_Mouse_Position : Mouse_Position := No_Mouse_Position;
    end Data_Manager;
+
 
    type E_Pixel is record
       R : GLubyte;
@@ -155,8 +154,7 @@ private package Display.Kernel is
    end record;
    pragma Convention (C, E_Pixel);
 
-   type Pixel_Array is array (int range <>) of E_Pixel
-   with Pack;
+   type Pixel_Array is array (int range <>) of E_Pixel;
    pragma Convention (C, Pixel_Array);
 
    type Pixel_Array_Access is access all Pixel_Array;

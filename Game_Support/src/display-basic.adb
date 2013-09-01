@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------
 --                              Ada Labs                             --
 --                                                                   --
---                 Copyright (C) 2008-2009, AdaCore                  --
+--                 Copyright (C) 2008-2013, AdaCore                  --
 --                                                                   --
 -- Labs is free  software; you can redistribute it and/or modify  it --
 -- under the terms of the GNU General Public License as published by --
@@ -17,8 +17,7 @@
 -- Place - Suite 330, Boston, MA 02111-1307, USA.                    --
 -----------------------------------------------------------------------
 
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Display.Kernel;  use Display.Kernel;
 
 package body Display.Basic is
 
@@ -55,7 +54,7 @@ package body Display.Basic is
 
    function Get_Y (Shape : Shape_Id) return Float is
    begin
-       return Data_Manager.Get_Data (Natural (Shape)).Y;
+      return Data_Manager.Get_Data (Natural (Shape)).Y;
    end Get_Y;
 
    ---------------
@@ -64,7 +63,7 @@ package body Display.Basic is
 
    procedure Set_Color (Shape : in out Shape_Id; Color : Color_Type) is
    begin
-     Data_Manager.Schedule_Command ((Set_Color, Natural (Shape), Color));
+      Data_Manager.Schedule_Command ((Set_Color, Natural (Shape), Color));
    end Set_Color;
 
    ---------------
@@ -169,7 +168,7 @@ package body Display.Basic is
 
    procedure Set_Radius (Shape : in out Shape_Id; Value : Float) is
    begin
-     Data_Manager.Schedule_Command ((Set_Radius, Natural (Shape), Value));
+      Data_Manager.Schedule_Command ((Set_Radius, Natural (Shape), Value));
    end Set_Radius;
 
    ----------------
@@ -322,17 +321,16 @@ package body Display.Basic is
       return Data_Manager.Get_Text (Natural (V));
    end Get_Text;
 
-   -------------------
-   -- Read_Last_Key --
-   -------------------
+   -----------------------
+   -- Current_Key_Press --
+   -----------------------
 
-   function Read_Last_Key return Key_Type is
+   function Current_Key_Press return Key_Type is
       Val : Key_Type;
    begin
-      Data_Manager.Read_Last_Key (Val);
-
+      Read_Current_Key (Val);
       return Val;
-   end Read_Last_Key;
+   end Current_Key_Press;
 
    ------------------
    -- To_Character --
@@ -351,7 +349,7 @@ package body Display.Basic is
    -- To_Character --
    ------------------
 
-   function To_Special(Key : Key_Type) return Special_Key is
+   function To_Special (Key : Key_Type) return Special_Key is
    begin
       if Key > 255 then
          return Special_Key'Val (Key - 256);
