@@ -527,7 +527,7 @@ package body Display.Kernel is
 
       fntCourrier := TTF_OpenFont (Interfaces.C.Strings.New_String ("C:\Windows\Fonts\arial.ttf"), 12);
 
-      clrFg := (0, 0, 255, 0);
+      clrFg := (0, 0, 255, 0);  -- not relevant...
 
       sText :=
         TTF_RenderText_Solid
@@ -553,7 +553,44 @@ package body Display.Kernel is
                Line := int (Obj.H) - Line - 1;
 
                if Import_Pixels (J) /= 0 then
-                  Obj.Pixels (Line * int (Obj.W) + Col).R := 255;
+                  declare
+                     Index : constant int := Line * Int (Obj.W) + Col;
+                  begin
+                     case Obj.D.Color is
+                        when Red =>
+                           Obj.Pixels (Index).R := 255;
+                           Obj.Pixels (Index).G := 0;
+                           Obj.Pixels (Index).B := 0;
+                        when Green =>
+                           Obj.Pixels (Index).R := 0;
+                           Obj.Pixels (Index).G := 255;
+                           Obj.Pixels (Index).B := 0;
+                        when Blue =>
+                           Obj.Pixels (Index).R := 0;
+                           Obj.Pixels (Index).G := 0;
+                           Obj.Pixels (Index).B := 255;
+                        when Black =>
+                           Obj.Pixels (Index).R := 0;
+                           Obj.Pixels (Index).G := 0;
+                           Obj.Pixels (Index).B := 0;
+                        when White =>
+                           Obj.Pixels (Index).R := 255;
+                           Obj.Pixels (Index).G := 255;
+                           Obj.Pixels (Index).B := 255;
+                        when Cyan =>
+                           Obj.Pixels (Index).R := 0;
+                           Obj.Pixels (Index).G := 255;
+                           Obj.Pixels (Index).B := 255;
+                        when Magenta =>
+                           Obj.Pixels (Index).R := 255;
+                           Obj.Pixels (Index).G := 0;
+                           Obj.Pixels (Index).B := 255;
+                        when Yellow =>
+                           Obj.Pixels (Index).R := 255;
+                           Obj.Pixels (Index).G := 255;
+                           Obj.Pixels (Index).B := 0;
+                     end case;
+                  end;
                end if;
             end;
          end loop;
