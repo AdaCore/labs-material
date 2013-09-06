@@ -52,7 +52,7 @@ package body Display.Kernel is
    Window_Width, Window_Height : Integer;
 
    Last_Key : Key_Type with Atomic;
-   --  a shared variable, set concurrently by the Poll_Events routine and read 
+   --  a shared variable, set concurrently by the Poll_Events routine and read
    --  by client code
 
    procedure Draw_Text (Obj : in out Shape_Object)
@@ -60,7 +60,7 @@ package body Display.Kernel is
 
    procedure Update_Text (Obj : in out Shape_Object)
      with Pre => Obj.Kind = Text;
-   
+
    -----------
    -- Check --
    -----------
@@ -71,7 +71,7 @@ package body Display.Kernel is
          raise Display_Error;
       end if;
    end Check;
-   
+
    ----------------------
    -- Read_Current_Key --
    ----------------------
@@ -79,8 +79,8 @@ package body Display.Kernel is
    procedure Read_Current_Key (Key : out Key_Type) is
    begin
       Key := Last_Key;
-   end Read_Current_Key;   
-  
+   end Read_Current_Key;
+
    ---------------
    -- Set_Color --
    ---------------
@@ -633,6 +633,8 @@ package body Display.Kernel is
 
       Set_SDL_Video;
 
+      SDL_WM_SetCaption (Title => New_String ("Ada Labs"), Icon  => Null_Ptr);
+
       --  openGL is not part of SDL, rather it runs in a window handled
       --  by SDL. here we set up some openGL state
 
@@ -760,18 +762,18 @@ package body Display.Kernel is
       begin
          return 256 + Special_Key'Pos (K);
       end As_Key;
-      
+
       Up_Arrow    : constant Key_Type := As_Key (KEY_UP);
       Down_Arrow  : constant Key_Type := As_Key (KEY_DOWN);
       Left_Arrow  : constant Key_Type := As_Key (KEY_LEFT);
       Right_Arrow : constant Key_Type := As_Key (KEY_RIGHT);
-      
+
    begin
       while SDL_PollEvent (Evt'Unchecked_Access) /= 0 loop
          case unsigned (Evt.c_type) is
             when SDL_SDL_events_h.SDL_Quit =>
                Stop := True;
-            when SDL_KEYDOWN =>               
+            when SDL_KEYDOWN =>
                case Evt.Key.Keysym.Sym is
                   when SDLK_LEFT =>
                      Last_Key := Left_Arrow;
@@ -788,7 +790,7 @@ package body Display.Kernel is
                if Evt.Key.Keysym.Sym = SDLK_ESCAPE then
                   Stop := True;
                end if;
-               
+
             when SDL_KEYUP =>
                Last_Key := 0;
 
@@ -1097,7 +1099,7 @@ package body Display.Kernel is
 begin
    Data_Manager.Initialize;
    Set_Dependents_Fallback_Handler (Exception_Reporting.Report'Access);
-   Set_Specific_Handler 
-     (Ada.Task_Identification.Current_Task, 
-      Exception_Reporting.Report'Access);   
+   Set_Specific_Handler
+     (Ada.Task_Identification.Current_Task,
+      Exception_Reporting.Report'Access);
 end Display.Kernel;
