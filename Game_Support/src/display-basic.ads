@@ -152,8 +152,20 @@ package Display.Basic is
    --  Convert the key to an ASCII-character if the key actually represent such
    --  character. ASCII.NUL returned otherwise
 
-   function To_Special(Key : Key_Type) return Special_Key;
+   function To_Special (Key : Key_Type) return Special_Key;
    --  Convert the key to an special key
+
+   function Is_Special_Key (Key : Key_Type) return Boolean with Inline;
+   --  Returns whether the key is one of the Special_Key values
+
+   function Is_Control_Key (Key : Key_Type) return Boolean with Inline;
+   --  Returns whether the key is the control key
+
+   function Is_Shift_Key (Key : Key_Type) return Boolean with Inline;
+   --  Returns whether the key is the shift key
+
+   function Is_Alt_Key (Key : Key_Type) return Boolean with Inline;
+   --  Returns whether the key is the alt key
 
    function Read_Last_Mouse_Position return Mouse_Position;
 

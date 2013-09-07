@@ -345,18 +345,56 @@ package body Display.Basic is
       end if;
    end To_Character;
 
+   --  the numeric key values associated with the special keys type
+
+   subtype Special_Key_Values is
+     Key_Type range 256 .. 256 + Special_Key'Pos (Special_Key'Last);
+   --  the control key, for example, is 306
+
+   --------------------
+   -- Is_Special_Key --
+   --------------------
+
+   function Is_Special_Key (Key : Key_Type) return Boolean is
+      (Key in Special_Key_Values);
+
+   --------------------
+   -- Is_Control_Key --
+   --------------------
+
+   function Is_Control_Key (Key : Key_Type) return Boolean is
+      (Key = 306);
+
+   ------------------
+   -- Is_Shift_Key --
+   ------------------
+
+   function Is_Shift_Key (Key : Key_Type) return Boolean is
+      (Key = 304);
+
+   ----------------
+   -- Is_Alt_Key --
+   ----------------
+
+   function Is_Alt_Key (Key : Key_Type) return Boolean is
+      (Key = 308);
+
    ------------------
    -- To_Character --
    ------------------
 
    function To_Special (Key : Key_Type) return Special_Key is
    begin
-      if Key > 255 then
+      if Key in Special_Key_Values then
          return Special_Key'Val (Key - 256);
       else
          return KEY_NONE;
       end if;
    end To_Special;
+
+   ------------------------------
+   -- Read_Last_Mouse_Position --
+   ------------------------------
 
    function Read_Last_Mouse_Position return Mouse_Position is
       P : Mouse_Position;
