@@ -30,7 +30,7 @@ procedure @_Main_Name_@ is
 begin
    loop
       Cycle := Cycle + 1;
-      Last_Key := Read_Last_Key;
+      Last_Key := Current_Key_Press;
       
       case To_Special (Last_Key) is
          when KEY_UP =>
