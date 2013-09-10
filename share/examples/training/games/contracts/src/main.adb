@@ -44,7 +44,7 @@ begin
    loop
       Iterate (X);
       Cycle := Cycle + 1;
-      Last_Key := Read_Last_Key;
+      Last_Key := Current_Key_Press;
       
       
       
