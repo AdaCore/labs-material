@@ -22,7 +22,7 @@ procedure Bouncing is
       S        : Shape_Id := Null_Shape_Id;
       Immunity : Integer := Base_Immunity;
    end record
-   with Static_Predicate => Ball.Mass > 0.0;
+   with Dynamic_Predicate => Ball.Mass > 0.0;
 
    type Shape_Array_Type is array (Integer range <>) of Shape_Id;
    type Ball_Array_Type is array (Integer range <>) of Ball;
@@ -390,7 +390,7 @@ begin
       Set_Text (Combine_Txt, "Combine Prob:" & Integer (Combine_Prob * 1000.0)'Img & " / 1000");
 
       declare
-         Last_Key : Key_Type := Read_Last_Key;
+         Last_Key : Key_Type := Current_Key_Press;
       begin
          if To_Character (Last_Key) = 'q' then
             Explode_Prob := Explode_Prob - 0.001;

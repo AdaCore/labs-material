@@ -171,7 +171,7 @@ begin
            
    loop
       P := Read_Last_Mouse_Position;
-      K := Read_Last_Key;
+      K := Current_Key_Press;
       
       if P /= No_Mouse_Position then
          if Integer (P.X) in -100 .. 100 

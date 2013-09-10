@@ -56,7 +56,7 @@ begin
          Set_Y (S, Get_Y (S) + Dy);
       end if;
 
-      Key := Read_Last_Key;
+      Key := Current_Key_Press;
 
       case To_Character (Key) is
          when 'q' =>
