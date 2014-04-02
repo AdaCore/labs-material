@@ -17,6 +17,7 @@ fi
 
 cd ../tmp
 
+mkdir -p $PREFIX/lib && mkdir -p $PREFIX/bin && \
 unzip -o ../packages/SDL-devel-1.2.15-mingw32.zip && \
 chmod u+x SDL-1.2.15/bin/*.dll && \
 cp SDL-1.2.15/lib/*.a $PREFIX/lib && \
