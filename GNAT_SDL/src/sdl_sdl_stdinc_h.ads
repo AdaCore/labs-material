@@ -1,3 +1,27 @@
+------------------------------------------------------------------------------
+--          Copyright (C) 1995-2014, Free Software Foundation, Inc.         --
+--                                                                          --
+-- GNAT is free software;  you can  redistribute it  and/or modify it under --
+-- terms of the  GNU General Public License as published  by the Free Soft- --
+-- ware  Foundation;  either version 3,  or (at your option) any later ver- --
+-- sion.  GNAT is distributed in the hope that it will be useful, but WITH- --
+-- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+-- or FITNESS FOR A PARTICULAR PURPOSE.                                     --
+--                                                                          --
+-- As a special exception under Section 7 of GPL version 3, you are granted --
+-- additional permissions described in the GCC Runtime Library Exception,   --
+-- version 3.1, as published by the Free Software Foundation.               --
+--                                                                          --
+-- In particular,  you can freely  distribute your programs  built with the --
+-- GNAT Pro compiler, including any required library run-time units,  using --
+-- any licensing terms  of your choosing.  See the AdaCore Software License --
+-- for full details.                                                        --
+--                                                                          --
+-- GNAT was originally developed  by the GNAT team at  New York University. --
+-- Extensive contributions were provided by Ada Core Technologies Inc.      --
+--                                                                          --
+------------------------------------------------------------------------------
+
 pragma Ada_2005;
 pragma Style_Checks (Off);
 
@@ -83,7 +107,7 @@ package SDL_SDL_stdinc_h is
    --    return Uint16 *)SDL_iconv_string("UCS-2", "UTF-8", S, SDL_strlen(S)+1;
    --  arg-macro: function SDL_iconv_utf8_ucs4 (S)
    --    return Uint32 *)SDL_iconv_string("UCS-4", "UTF-8", S, SDL_strlen(S)+1;
-   type SDL_bool is 
+   type SDL_bool is
      (SDL_FALSE,
       SDL_TRUE);
    pragma Convention (C, SDL_bool);  -- ../include/SDL/SDL_stdinc.h:96
@@ -120,7 +144,7 @@ package SDL_SDL_stdinc_h is
 
    type SDL_dummy_sint64 is array (0 .. 0) of aliased int;  -- ../include/SDL/SDL_stdinc.h:132
 
-   type SDL_DUMMY_ENUM is 
+   type SDL_DUMMY_ENUM is
      (DUMMY_ENUM_VALUE);
    pragma Convention (C, SDL_DUMMY_ENUM);  -- ../include/SDL/SDL_stdinc.h:148
 
@@ -130,7 +154,6 @@ package SDL_SDL_stdinc_h is
    pragma Import (C, SDL_getenv, "SDL_getenv");
 
    function SDL_putenv (variable : Interfaces.C.Strings.chars_ptr) return int;  -- ../include/SDL/SDL_stdinc.h:224
-   pragma Import (C, SDL_putenv, "SDL_putenv");
 
    function SDL_strlcpy
      (dst : Interfaces.C.Strings.chars_ptr;

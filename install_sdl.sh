@@ -1,3 +1,7 @@
+if [ $(uname) = "Linux" ]; then
+    exit
+fi
+
 PREFIX=$1
 
 function exit_if_fail {

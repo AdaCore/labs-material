@@ -11,7 +11,7 @@ library project GNAT_SDL is
    end Compiler;  
 
   package Linker is
-     for Linker_Options use ("-lglu32", "-lopengl32", "-lSDL", "-lSDL_ttf");
+     for Linker_Options use ("-lSDL", "-lSDL_ttf", "-lglut", "-lGL", "-lGLU");
   end Linker;
 
 end GNAT_SDL;
