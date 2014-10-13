@@ -1,11 +1,12 @@
-PREFIX=$(HOME)/lab_install
+PREFIX=${PREFIX:-/usr/local/labs}
+
 ifeq ($(OS),Windows_NT)
 	HOST="Windows"
 else
 	HOST="Linux"
 endif
 
-all: install_sdl mk_sdl mk_game_support mk_share
+all: mk_sdl mk_game_support mk_share
 
 mk_sdl:
 	export HOST=$(HOST) && cd GNAT_SDL && gprbuild -P gnat_sdl.gpr && gprinstall -P gnat_sdl.gpr --prefix=$(PREFIX) -p -f
@@ -15,6 +16,3 @@ mk_game_support:
 
 mk_share:
 	cp -r share $(PREFIX)
-
-install_sdl:
-	sh install_sdl.sh $(PREFIX)
